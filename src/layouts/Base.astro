@@ -1,0 +1,101 @@
+---
+import SEO from '../components/SEO.astro';
+
+export interface Props {
+  title: string;
+  description: string;
+  canonicalURL?: string;
+  ogImage?: string;
+  pubDate?: Date;
+  type?: 'website' | 'article';
+}
+
+const { title, description, canonicalURL, ogImage, pubDate, type } = Astro.props;
+---
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="generator" content={Astro.generator} />
+    <SEO
+      title={title}
+      description={description}
+      canonicalURL={canonicalURL}
+      ogImage={ogImage}
+      pubDate={pubDate}
+      type={type}
+    />
+  </head>
+  <body class="bg-gray-50 text-gray-900 min-h-screen flex flex-col">
+    <!-- Navigation -->
+    <nav class="bg-white border-b border-gray-200 sticky top-0 z-50">
+      <div class="max-w-6xl mx-auto px-4 sm:px-6">
+        <div class="flex items-center justify-between h-16">
+          <a href="/" class="flex items-center gap-2 font-bold text-xl text-indigo-600">
+            <span class="text-2xl">🤖</span>
+            <span>AI HowTo Hub</span>
+          </a>
+          <div class="hidden md:flex items-center gap-6">
+            <a href="/how-to" class="text-gray-600 hover:text-indigo-600 transition-colors text-sm font-medium">Tutorials</a>
+            <a href="/compare" class="text-gray-600 hover:text-indigo-600 transition-colors text-sm font-medium">Compare Tools</a>
+            <a href="/tools" class="text-gray-600 hover:text-indigo-600 transition-colors text-sm font-medium">All Tools</a>
+          </div>
+          <button class="md:hidden p-2 text-gray-500" id="mobile-menu-btn">
+            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+          </button>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="flex-1">
+      <slot />
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-gray-200 mt-16">
+      <div class="max-w-6xl mx-auto px-4 sm:px-6 py-10">
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-8 mb-8">
+          <div class="col-span-2 md:col-span-1">
+            <a href="/" class="flex items-center gap-2 font-bold text-lg text-indigo-600 mb-3">
+              <span>🤖</span><span>AI HowTo Hub</span>
+            </a>
+            <p class="text-sm text-gray-500">Practical AI tutorials for real people.</p>
+          </div>
+          <div>
+            <h4 class="font-semibold text-gray-800 mb-3 text-sm">Tutorials</h4>
+            <ul class="space-y-2 text-sm text-gray-500">
+              <li><a href="/how-to/use-ai-to-write-emails" class="hover:text-indigo-600">Write Emails with AI</a></li>
+              <li><a href="/how-to/generate-images-with-ai" class="hover:text-indigo-600">Generate Images</a></li>
+              <li><a href="/how-to/remove-background-with-ai" class="hover:text-indigo-600">Remove Backgrounds</a></li>
+              <li><a href="/how-to" class="hover:text-indigo-600">View All →</a></li>
+            </ul>
+          </div>
+          <div>
+            <h4 class="font-semibold text-gray-800 mb-3 text-sm">Compare</h4>
+            <ul class="space-y-2 text-sm text-gray-500">
+              <li><a href="/tools" class="hover:text-indigo-600">All AI Tools</a></li>
+              <li><a href="/compare" class="hover:text-indigo-600">Tool Comparisons</a></li>
+            </ul>
+          </div>
+          <div>
+            <h4 class="font-semibold text-gray-800 mb-3 text-sm">Site</h4>
+            <ul class="space-y-2 text-sm text-gray-500">
+              <li><a href="/about" class="hover:text-indigo-600">About</a></li>
+              <li><a href="/sitemap-index.xml" class="hover:text-indigo-600">Sitemap</a></li>
+            </ul>
+          </div>
+        </div>
+        <div class="border-t border-gray-100 pt-6 flex flex-col md:flex-row items-center justify-between gap-3">
+          <p class="text-xs text-gray-400">© {new Date().getFullYear()} AI HowTo Hub. Some links are affiliate links.</p>
+          <p class="text-xs text-gray-400">Built for humans who want to use AI, not just read about it.</p>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>

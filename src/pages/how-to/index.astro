@@ -1,0 +1,32 @@
+---
+import Base from '../../layouts/Base.astro';
+import HowToCard from '../../components/HowToCard.astro';
+import { getCollection } from 'astro:content';
+
+const allPosts = await getCollection('how-to');
+const sortedPosts = allPosts.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+---
+
+<Base
+  title="AI How-To Tutorials — Step-by-Step Guides"
+  description="Browse all AI how-to tutorials. Learn how to use AI tools for writing, images, coding, video, productivity, and more."
+>
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 py-10">
+    <div class="mb-8">
+      <h1 class="text-3xl font-bold text-gray-900 mb-2">AI How-To Tutorials</h1>
+      <p class="text-gray-600">{sortedPosts.length} guides · Updated regularly</p>
+    </div>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      {sortedPosts.map((post) => (
+        <HowToCard
+          title={post.data.title}
+          description={post.data.description}
+          href={`/how-to/${post.slug}`}
+          tags={post.data.tags}
+          readingTime={post.data.readingTime || '5 min'}
+          tools={post.data.tools}
+        />
+      ))}
+    </div>
+  </div>
+</Base>

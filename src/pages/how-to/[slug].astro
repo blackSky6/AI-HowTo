@@ -1,0 +1,24 @@
+---
+import { getCollection } from 'astro:content';
+import HowTo from '../../layouts/HowTo.astro';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('how-to');
+  return posts.map((post) => ({
+    params: { slug: post.slug },
+    props: { post },
+  }));
+}
+
+const { post } = Astro.props;
+const { Content } = await post.render();
+---
+
+<HowTo
+  title={post.data.title}
+  description={post.data.description}
+  pubDate={post.data.pubDate}
+  tools={post.data.tools}
+>
+  <Content />
+</HowTo>
