@@ -1,0 +1,102 @@
+---
+title: "How to Build an AI Agent (No Coding Required)"
+description: "Learn what AI agents are and how to build one using tools like n8n, Make, or the new visual agent builders — no programming experience needed."
+pubDate: 2026-03-28
+tools: ["n8n", "Make", "Claude", "AutoGPT"]
+tags: ["agents", "automation", "no-code"]
+readingTime: "6 min"
+featured: true
+---
+
+## TL;DR
+
+An AI agent is a program that uses AI to take actions autonomously — browsing the web, sending emails, running code. **n8n** (self-hosted, free) and **Make** (cloud, freemium) are the best platforms to build agents without coding. For simple automations, Claude's new tool-use feature lets you prototype in minutes.
+
+## What Is an AI Agent?
+
+An AI agent = AI model + ability to take actions
+
+Unlike a chatbot that just answers questions, an agent can:
+- Search the web for information
+- Read and write files
+- Send emails or Slack messages
+- Call APIs
+- Make decisions based on results
+
+**Example:** An AI agent that monitors your inbox, identifies important emails from clients, summarizes them, and sends a daily digest to your Slack.
+
+## Method 1: Build with n8n (No-Code, Self-Hosted)
+
+n8n is an open-source automation platform with an AI Agent node built in.
+
+### Step 1: Install n8n
+Option A — Cloud (easiest): Sign up at [n8n.cloud](https://n8n.cloud) (free trial)
+Option B — Self-hosted (free forever): `npx n8n` in your terminal
+
+### Step 2: Create a New Workflow
+1. Click "New Workflow"
+2. Add a trigger (e.g., "On new email received", "Every day at 9am", "On webhook")
+
+### Step 3: Add the AI Agent Node
+1. Click "+" to add a node
+2. Search "AI Agent"
+3. Connect your LLM:
+   - Click on the AI Agent node
+   - Select "Language Model" → Choose OpenAI or Claude
+   - Add your API key
+
+### Step 4: Give the Agent Tools
+Add tool nodes the agent can use:
+- **HTTP Request** — call any API
+- **Gmail** — read/send emails
+- **Slack** — post messages
+- **Code** — run JavaScript/Python
+- **Search** — web search via SerpAPI
+
+### Step 5: Write the Agent's Instructions
+In the "System Message" field:
+```
+You are an email assistant. When given an email, extract:
+1. The sender's request
+2. Required action (if any)
+3. Priority (High/Medium/Low)
+Respond in JSON format.
+```
+
+### Step 6: Test and Activate
+- Click "Test Workflow" with sample data
+- Check each step's output
+- When working, toggle "Active" to run automatically
+
+## Method 2: Build with Make (Visual, Cloud-Based)
+
+Make.com is easier to start with than n8n.
+
+1. Sign up free at [make.com](https://make.com)
+2. Create a Scenario
+3. Add an AI module (OpenAI or Claude)
+4. Connect input and output apps (Gmail, Sheets, Slack, etc.)
+5. Schedule or trigger
+
+Make's free tier: 1,000 operations/month.
+
+## 5 Practical AI Agents You Can Build Today
+
+| Agent | What it does | Tools needed |
+|-------|-------------|-------------|
+| **Email Digest** | Reads emails, summarizes, sends Slack summary | Gmail + OpenAI + Slack |
+| **Research Bot** | Searches web for a topic, writes report | Search API + Claude |
+| **Social Monitor** | Tracks mentions of your brand | Twitter API + OpenAI |
+| **Lead Qualifier** | Scores form submissions by fit | Webhook + GPT-4 |
+| **Daily Briefing** | Weather + news + calendar → morning email | Multiple APIs + ChatGPT |
+
+## FAQ
+
+**Do I need to know how to code?**
+Not for basic agents in n8n or Make. Complex logic or custom API integrations may require some JavaScript knowledge.
+
+**What's the difference between a chatbot and an agent?**
+A chatbot responds to inputs. An agent takes autonomous actions based on a goal. Agents can run without human input in the loop.
+
+**How much do AI agents cost to run?**
+For personal use: $0-10/month (API calls + hosting). n8n self-hosted = free for the platform. OpenAI API costs ~$0.01-0.10 per run depending on prompt length.
