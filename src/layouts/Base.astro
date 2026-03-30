@@ -1,5 +1,6 @@
 ---
 import SEO from '../components/SEO.astro';
+import { Show, SignInButton, SignOutButton, UserButton } from '@clerk/astro/components';
 
 export interface Props {
   title: string;
@@ -42,6 +43,17 @@ const { title, description, canonicalURL, ogImage, pubDate, type } = Astro.props
             <a href="/how-to" class="text-gray-600 hover:text-indigo-600 transition-colors text-sm font-medium">Tutorials</a>
             <a href="/compare" class="text-gray-600 hover:text-indigo-600 transition-colors text-sm font-medium">Compare Tools</a>
             <a href="/tools" class="text-gray-600 hover:text-indigo-600 transition-colors text-sm font-medium">All Tools</a>
+            <!-- Auth buttons -->
+            <Show when="unauthenticated">
+              <SignInButton mode="modal">
+                <button class="bg-indigo-600 text-white text-sm font-medium px-4 py-1.5 rounded-lg hover:bg-indigo-700 transition-colors">
+                  Sign in
+                </button>
+              </SignInButton>
+            </Show>
+            <Show when="authenticated">
+              <UserButton afterSignOutUrl="/" />
+            </Show>
           </div>
           <button class="md:hidden p-2 text-gray-500" id="mobile-menu-btn">
             <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
