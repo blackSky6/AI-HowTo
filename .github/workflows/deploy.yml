@@ -32,6 +32,9 @@ jobs:
         run: pnpm install --no-frozen-lockfile && pnpm add -g wrangler
 
       - name: Build
+        env:
+          PUBLIC_CLERK_PUBLISHABLE_KEY: ${{ secrets.PUBLIC_CLERK_PUBLISHABLE_KEY }}
+          CLERK_SECRET_KEY: ${{ secrets.CLERK_SECRET_KEY }}
         run: pnpm run build
 
       - name: Deploy to Cloudflare Pages
