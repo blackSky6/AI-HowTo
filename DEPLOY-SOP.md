@@ -71,7 +71,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
@@ -187,6 +187,7 @@ git push origin main
 |------|------|------|
 | `npm error Exit handler never called` | GitHub Actions runner npm bug | 换 pnpm |
 | `wrangler: not found` | wrangler-action 内部用 npm 安装失败 | 用 `pnpm add -g wrangler` 手动装 |
+| `Node.js vXX is not supported by Astro` | Node 版本过低，Astro v6 要求 >=22 | workflow 改 `node-version: '22'` |
 | Zone 添加报权限错误 | Token 缺 Zone:Create | 重建 Token 加权限 |
 | Pages 无法绑定 GitHub | 项目是 Direct Upload 模式 | 删重建，用 GitHub 集成方式创建 |
 | NS 迟迟不生效 | 注册商缓存 | 等待，最长 24h；用 `dig @8.8.8.8` 验证 |
