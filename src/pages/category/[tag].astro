@@ -1,0 +1,94 @@
+---
+import Base from '../../layouts/Base.astro';
+import HowToCard from '../../components/HowToCard.astro';
+import { getCollection } from 'astro:content';
+
+export async function getStaticPaths() {
+  const allPosts = await getCollection('how-to');
+
+  // 收集所有 tags
+  const tagSet = new Set<string>();
+  allPosts.forEach(post => {
+    post.data.tags?.forEach((tag: string) => tagSet.add(tag));
+  });
+
+  return Array.from(tagSet).map(tag => ({
+    params: { tag },
+    props: {
+      tag,
+      posts: allPosts
+        .filter(post => post.data.tags?.includes(tag))
+        .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()),
+    },
+  }));
+}
+
+const { tag, posts } = Astro.props;
+
+// 友好的分类标签映射
+const categoryLabels: Record<string, { name: string; emoji: string; desc: string }> = {
+  writing:       { name: 'Writing & Emails',    emoji: '✍️',  desc: 'AI guides for drafting, editing, and sending better written content.' },
+  image:         { name: 'Image & Art',         emoji: '🎨',  desc: 'How to generate, edit, and create stunning visuals with AI.' },
+  images:        { name: 'Images',              emoji: '🖼️',  desc: 'AI-powered image creation and editing tutorials.' },
+  coding:        { name: 'Coding',              emoji: '💻',  desc: 'Use AI to write, debug, and review code faster.' },
+  video:         { name: 'Video & Audio',       emoji: '🎬',  desc: 'AI tools for video editing, audio creation, and content production.' },
+  audio:         { name: 'Audio',               emoji: '🎵',  desc: 'AI-powered audio and music tutorials.' },
+  productivity:  { name: 'Productivity',        emoji: '⚡',  desc: 'Get more done with AI assistants for scheduling, summarizing, and more.' },
+  data:          { name: 'Analysis & Data',     emoji: '📊',  desc: 'AI tools for data analysis, visualization, and business insights.' },
+  design:        { name: 'Design',              emoji: '🎨',  desc: 'Creative and visual design guides powered by AI.' },
+  creative:      { name: 'Creative',            emoji: '✨',  desc: 'Creative AI projects and artistic inspiration.' },
+  art:           { name: 'Art',                 emoji: '🖌️',  desc: 'AI-generated art, styles, and techniques.' },
+  music:         { name: 'Music',               emoji: '🎶',  desc: 'AI music composition and production guides.' },
+  agents:        { name: 'AI Agents',           emoji: '🤖',  desc: 'Build and use autonomous AI agents for automation.' },
+  automation:    { name: 'Automation',          emoji: '⚙️',  desc: 'Automate repetitive tasks with AI workflows.' },
+};
+
+const label = categoryLabels[tag] ?? { name: tag.charAt(0).toUpperCase() + tag.slice(1), emoji: '🔖', desc: `All tutorials tagged with "${tag}".` };
+---
+
+<Base
+  title={`${label.name} AI Tutorials — AI HowTo Hub`}
+  description={label.desc}
+>
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 py-10">
+    <!-- Breadcrumb -->
+    <nav class="text-sm text-gray-500 mb-6">
+      <a href="/" class="hover:text-indigo-600">Home</a>
+      <span class="mx-2">/</span>
+      <a href="/how-to" class="hover:text-indigo-600">Tutorials</a>
+      <span class="mx-2">/</span>
+      <span class="text-gray-800 font-medium">{label.name}</span>
+    </nav>
+
+    <!-- Header -->
+    <div class="mb-8">
+      <div class="flex items-center gap-3 mb-2">
+        <span class="text-4xl">{label.emoji}</span>
+        <h1 class="text-3xl font-bold text-gray-900">{label.name}</h1>
+      </div>
+      <p class="text-gray-600 mb-1">{label.desc}</p>
+      <p class="text-sm text-gray-400">{posts.length} {posts.length === 1 ? 'guide' : 'guides'}</p>
+    </div>
+
+    {posts.length > 0 ? (
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        {posts.map((post) => (
+          <HowToCard
+            title={post.data.title}
+            description={post.data.description}
+            href={`/how-to/${post.slug}`}
+            tags={post.data.tags}
+            readingTime={post.data.readingTime || '5 min'}
+            tools={post.data.tools}
+          />
+        ))}
+      </div>
+    ) : (
+      <div class="text-center py-16 text-gray-400">
+        <p class="text-5xl mb-4">🔍</p>
+        <p class="text-lg">No tutorials found for this category yet.</p>
+        <a href="/how-to" class="mt-4 inline-block text-indigo-600 hover:underline">Browse all tutorials →</a>
+      </div>
+    )}
+  </div>
+</Base>
