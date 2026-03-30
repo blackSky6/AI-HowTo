@@ -3,7 +3,7 @@ import mdx from '@astrojs/mdx';
 import tailwind from '@astrojs/tailwind';
 
 export default defineConfig({
-  site: 'https://ai-howto.pages.dev',
+  site: 'https://aihowto.shop',
   integrations: [
     mdx(),
     tailwind(),
