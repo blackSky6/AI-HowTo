@@ -164,7 +164,20 @@ curl -sI https://example.com | head -3
 
 ---
 
-## 六、日常开发流程
+## 八、本地开发规范
+
+> ⚠️ 本地装包**必须用 pnpm**，否则只更新 `package-lock.json`，CI 用 pnpm 会重新解析依赖导致版本不一致
+
+```bash
+# 安装依赖
+npx pnpm install
+
+# 新增包
+npx pnpm add some-package
+
+# 开发
+npm run dev   # 或 npx pnpm run dev
+```
 
 ```bash
 # 本地开发
