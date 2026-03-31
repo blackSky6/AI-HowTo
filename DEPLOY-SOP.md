@@ -11,7 +11,7 @@
 ```bash
 npm create astro@latest my-project
 cd my-project
-npm install
+npx pnpm install   # ⚠️ 必须用 pnpm，不要用 npm install
 ```
 
 ### 2. 初始化 Git 并推送 GitHub
@@ -71,7 +71,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '22'
+          node-version: '22'   # Astro v6 要求 >=22，不能用 20
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
@@ -91,6 +91,8 @@ jobs:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         run: wrangler pages deploy dist --project-name=my-project --commit-dirty=true
 ```
+
+> ⚠️ `wrangler pages deploy` 不支持 `--compatibility-flags` 参数，需要通过 CF API 单独设置（见第六节）
 
 ### 3.2 配置 GitHub Secrets
 ```bash
@@ -164,9 +166,37 @@ curl -sI https://example.com | head -3
 
 ---
 
-## 八、本地开发规范
+## 六、Cloudflare Pages 运行时配置（nodejs_compat）
 
-> ⚠️ 本地装包**必须用 pnpm**，否则只更新 `package-lock.json`，CI 用 pnpm 会重新解析依赖导致版本不一致
+> ⚠️ 使用 SSR + Node.js 模块（如 Clerk、postgres 等）时，**必须开启 `nodejs_compat`**，否则组件静默失败不报错。
+> 
+> `wrangler pages deploy` 命令不支持传 compatibility flags，必须通过 API 设置。
+
+```bash
+curl -X PATCH "https://api.cloudflare.com/client/v4/accounts/$CF_ACCOUNT/pages/projects/my-project" \
+  -H "Authorization: Bearer $CF_TOKEN" \
+  -H "Content-Type: application/json" \
+  --data '{
+    "deployment_configs": {
+      "production": {
+        "compatibility_flags": ["nodejs_compat"],
+        "compatibility_date": "2024-09-23"
+      },
+      "preview": {
+        "compatibility_flags": ["nodejs_compat"],
+        "compatibility_date": "2024-09-23"
+      }
+    }
+  }'
+```
+
+> ⚠️ 不要在项目里放 `wrangler.toml`，会与 `@astrojs/cloudflare` adapter 自动生成的 `dist/server/wrangler.json` 冲突，导致部署报 `ASSETS binding` 错误。
+
+---
+
+## 七、本地开发规范
+
+> ⚠️ 本地装包**必须用 pnpm**，不要用 npm，否则只会更新 `package-lock.json` 而不更新 `pnpm-lock.yaml`，CI 会版本不一致。
 
 ```bash
 # 安装依赖
@@ -175,32 +205,28 @@ npx pnpm install
 # 新增包
 npx pnpm add some-package
 
-# 开发
-npm run dev   # 或 npx pnpm run dev
-```
-
-```bash
 # 本地开发
-npm run dev
+npx pnpm run dev
 
-# 提交代码
+# 提交代码（自动触发 CI 部署）
 git add .
 git commit -m "feat: xxx"
 git push origin main
-# → GitHub Actions 自动触发 → pnpm build → wrangler deploy → 上线
+# → GitHub Actions → pnpm build → wrangler deploy → 上线（约 2-3 分钟）
 ```
-
-整个流程约 2-3 分钟完成部署。
 
 ---
 
-## 七、常见问题排查
+## 八、常见问题排查
 
 | 问题 | 原因 | 解法 |
 |------|------|------|
 | `npm error Exit handler never called` | GitHub Actions runner npm bug | 换 pnpm |
-| `wrangler: not found` | wrangler-action 内部用 npm 安装失败 | 用 `pnpm add -g wrangler` 手动装 |
+| `wrangler: not found` | npm 安装失败 | 用 `pnpm add -g wrangler` 手动装 |
 | `Node.js vXX is not supported by Astro` | Node 版本过低，Astro v6 要求 >=22 | workflow 改 `node-version: '22'` |
+| `Unknown arguments: compatibility-flags` | wrangler pages deploy 不支持该参数 | 通过 CF API PATCH 设置（见第六节） |
+| `ASSETS binding is reserved` | 项目有 `wrangler.toml` 与 adapter 生成的配置冲突 | 删掉 `wrangler.toml` |
+| Clerk/SSR 组件不渲染、静默失败 | 缺少 `nodejs_compat` flag | 通过 CF API 开启（见第六节） |
 | Zone 添加报权限错误 | Token 缺 Zone:Create | 重建 Token 加权限 |
 | Pages 无法绑定 GitHub | 项目是 Direct Upload 模式 | 删重建，用 GitHub 集成方式创建 |
 | NS 迟迟不生效 | 注册商缓存 | 等待，最长 24h；用 `dig @8.8.8.8` 验证 |
