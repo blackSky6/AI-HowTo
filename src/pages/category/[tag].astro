@@ -76,7 +76,7 @@ const label = categoryLabels[tag] ?? { name: tag.charAt(0).toUpperCase() + tag.s
           <HowToCard
             title={post.data.title}
             description={post.data.description}
-            href={`/how-to/${post.slug}`}
+            href={`/how-to/${post.id}`}
             tags={post.data.tags}
             readingTime={post.data.readingTime || '5 min'}
             tools={post.data.tools}
