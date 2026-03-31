@@ -7,7 +7,11 @@ import clerk from '@clerk/astro';
 export default defineConfig({
   site: 'https://aihowto.shop',
   output: 'server',
-  adapter: cloudflare(),
+  adapter: cloudflare({
+    platformProxy: { enabled: true },
+    cloudflareModules: true,
+    compatibilityFlags: ['nodejs_compat'],
+  }),
   integrations: [
     clerk(),
     mdx(),
