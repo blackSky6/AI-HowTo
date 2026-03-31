@@ -112,9 +112,21 @@ const clerkKey = import.meta.env.PUBLIC_CLERK_PUBLISHABLE_KEY;
 
     <!-- Clerk Auth Init -->
     <script>
-      window.addEventListener('load', async () => {
+      async function initClerk() {
+        // 等待 Clerk JS 脚本加载完毕
+        if (!window.Clerk) {
+          await new Promise<void>((resolve) => {
+            const script = document.querySelector('script[data-clerk-publishable-key]');
+            if (script) {
+              script.addEventListener('load', () => resolve());
+            } else {
+              resolve();
+            }
+          });
+        }
         const clerk = window.Clerk;
         if (!clerk) return;
+
         await clerk.load();
 
         const authDiv = document.getElementById('clerk-auth');
@@ -122,17 +134,21 @@ const clerkKey = import.meta.env.PUBLIC_CLERK_PUBLISHABLE_KEY;
         authDiv.innerHTML = '';
 
         if (clerk.user) {
-          // Signed in: show user button
           clerk.mountUserButton(authDiv, { afterSignOutUrl: '/' });
         } else {
-          // Signed out: show sign in button
           const btn = document.createElement('button');
           btn.className = 'bg-indigo-600 text-white text-sm font-medium px-4 py-1.5 rounded-lg hover:bg-indigo-700 transition-colors';
           btn.textContent = 'Sign in';
           btn.onclick = () => clerk.openSignIn({ afterSignInUrl: window.location.href });
           authDiv.appendChild(btn);
         }
-      });
+      }
+
+      if (document.readyState === 'complete') {
+        initClerk();
+      } else {
+        window.addEventListener('load', initClerk);
+      }
     </script>
   </body>
 </html>
